@@ -51,6 +51,16 @@ def exif_handler(event, context):
                     #  TODO: add exif lambda code here
                     #
                     ######
+                    image1 = download_from_s3(bucket_name, object_key)
+                    exif = image1.getexif()
+                    exif_dict = {Image.ExifTags.TAGS.get(tag, tag): value for tag, value in exif.items()}
+                    exif_bytes = json.dumps(exif_dict).encode('utf-8')
+                    filename = object_key.split('/')[-1]
+                    processed_key = f"processed/exif/{filename}"
+                    upload_to_s3(bucket_name, processed_key, exif_bytes, content_type='application/json')
+
+
+
 
                     processed_count += 1
 
